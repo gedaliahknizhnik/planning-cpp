@@ -32,6 +32,7 @@ add_library(plotter_lib src/planner_plotter.cpp include/planner_plotter.hpp)
 target_link_libraries(plotter_lib Python3::Python)
 
 add_library(planning_lib src/planner_rrt.cpp include/planner_rrt.hpp)
+target_link_libraries(planning_lib Eigen3::Eigen)
 
 # EXAMPLES ####################################################################
 

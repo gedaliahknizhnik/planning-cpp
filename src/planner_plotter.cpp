@@ -14,6 +14,10 @@ Plotter::~Plotter() { Save(); }
 
 void Plotter::PlotPoint(const std::vector<double>& point,
                         const std::string& name, const std::string& color) {
+  if (point.size() != 2) {
+    throw std::runtime_error("Plotter is only configured for 2D systems.");
+  }
+
   std::vector<double> x, y;
   x.push_back(point[0]);
   y.push_back(point[1]);
@@ -31,6 +35,10 @@ void Plotter::PlotGoal(const std::vector<double>& goal) {
 void Plotter::PlotPath(const std::vector<std::vector<double>>& path) {
   std::vector<double> x, y;
   for (const auto& point : path) {
+    if (point.size() != 2) {
+      throw std::runtime_error("Plotter is only configured for 2D systems.");
+    }
+
     x.push_back(point[0]);
     y.push_back(point[1]);
   }

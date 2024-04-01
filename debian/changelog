@@ -1,0 +1,8 @@
+planning (0.1.0) jammy; urgency=medium
+
+  * Set up initial project structure.
+    - Adds plotter for visualizing 2D plans in matplotlib.
+    - Adds basic skeleton for the RRT class. 
+    - Currently no plans returned. 
+
+ -- Gedaliah Knizhnik <gedaliah.knizhnik@gmail.com>  Mon, 01 Apr 2024 12:41:14 -0400

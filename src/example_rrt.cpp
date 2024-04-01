@@ -16,4 +16,8 @@ int main() {
 
   std::vector<std::vector<double>> path = {start, {1, 1}, {1, 3}, {5, 8}, goal};
   plt.PlotPath(path);
+
+  planning::RRT planner{2, 100, [](Eigen::VectorXd) { return false; }};
+  planner.SetProblem(start, goal);
+  planner.Solve();
 }

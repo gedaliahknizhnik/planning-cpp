@@ -1,6 +1,7 @@
 
 #include <Eigen/Geometry>
 #include <cmath>
+#include <iostream>
 #include <random>
 
 #include "planner_plotter.hpp"

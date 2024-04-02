@@ -5,16 +5,42 @@
 #include <chrono>
 #include <functional>
 #include <optional>
+#include <stdexcept>
 #include <thread>
 
 namespace planning {
 
-RRT::RRT(const int dim, const int max_iters, CollisionFunc collision_func)
-    : dim_(dim), max_iters_{max_iters}, collision_func_{collision_func} {};
+// Primary constructor - all other constructors should delegate to this one
+RRT::RRT(const int dim, const Eigen::VectorXd min_vals,
+         const Eigen::VectorXd max_vals, CollisionFunc collision_func)
+    : dim_{dim},
+      min_vals_{min_vals},
+      max_vals_{max_vals},
+      collision_func_{collision_func} {
+  // Check that all min values are less than the max values
+  if ((min_vals.array() >= max_vals.array()).any()) {
+    throw std::invalid_argument(
+        "All min values must be less than their corresponding max value.");
+  }
+}
+RRT::RRT(const int dim, const Eigen::VectorXd max_vals,
+         CollisionFunc collision_func)
+    : RRT(dim, -max_vals, max_vals, collision_func) {}
+RRT::RRT(const int dim, const double max_val, CollisionFunc collision_func)
+    : RRT(dim, -max_val * Eigen::VectorXd::Ones(dim),
+          max_val * Eigen::VectorXd::Ones(dim), collision_func) {}
+
 RRT::~RRT() {
   if (solver_thread_.joinable()) {
     solver_thread_.join();
   }
+}
+
+void RRT::SetMaxIters(const int max_iters) {
+  if (max_iters <= 0) {
+    throw std::runtime_error("Max iters must be greater than 0.");
+  }
+  max_iters_ = max_iters;
 }
 
 const PlanningStatus RRT::SetProblem(Eigen::VectorXd start,
@@ -60,6 +86,10 @@ void RRT::Solve() {
 
 void RRT::SolveInThread() {
   is_solved_ = false;
+
+  for (size_t iter{0UL}; iter < max_iters_; ++iter) {
+  }
+
   // TODO: SOLVE THE PROBLEM IN A THREAD
   // std::this_thread::sleep_for(std::chrono::seconds(10));
   is_solved_ = true;

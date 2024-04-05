@@ -8,7 +8,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Eigen3 REQUIRED)
 
-# MATPLOTLIB ###################################################################
+# CATCH2 ######################################################################
+
+include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG v3.4.0 # or a later release
+)
+
+FetchContent_MakeAvailable(Catch2)
+
+#MATPLOTLIB ###################################################################
 
 # Find Python interpreter for Matplotlib
 find_package(Python3 COMPONENTS Interpreter Development)
@@ -28,12 +40,11 @@ endif()
 
 # LOGGER #######################################################################
 
-include(FetchContent)
 FetchContent_Declare(
   logger_lib_gedaliah
-  GIT_REPOSITORY https://github.com/gedaliahknizhnik/logging-cpp.git 
+  GIT_REPOSITORY https://github.com/gedaliahknizhnik/logging-cpp.git
   GIT_TAG    3b44a2e
- )
+)
 
 FetchContent_MakeAvailable(logger_lib_gedaliah)
 
@@ -49,4 +60,21 @@ target_include_directories(planning_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMA
 # EXAMPLES ####################################################################
 
 add_executable(example_plan src/example_rrt.cpp)
-target_link_libraries(example_plan planning_lib plotter_lib Python3::Python Eigen3::Eigen)
+
+target_link_libraries(example_plan
+  planning_lib
+  plotter_lib
+  Python3::Python
+  Eigen3::Eigen)
+
+# TESTING ######################################################################
+
+add_executable(tests tests/planning.cpp)
+target_link_libraries(tests PRIVATE
+  planning_lib
+  Catch2::Catch2WithMain
+  Eigen3::Eigen
+)
+
+include(Catch)
+catch_discover_tests(tests)

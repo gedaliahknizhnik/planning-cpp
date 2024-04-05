@@ -1,8 +1,14 @@
-planning (0.2.0) UNRELEASED; urgency=medium
+planning (0.3.0) UNRELEASED; urgency=medium
 
   * Adds RRT planning. 
 
  -- Gedaliah Knizhnik <gedaliah.knizhnik@gmail.com>  Tue, 02 Apr 2024 08:48:28 -0400
+
+planning (0.2.0) jammy; urgency=medium
+
+  * Incorporates testing via Catch2 
+
+ -- Gedaliah Knizhnik <gedaliah.knizhnik@gmail.com>  Fri, 05 Apr 2024 10:25:49 -0400
 
 planning (0.1.0) jammy; urgency=medium
 

@@ -18,6 +18,10 @@ RRT::RRT(const int dim, const Eigen::VectorXd min_vals,
       max_vals_{max_vals},
       collision_func_{collision_func},
       logger_{logging::LogLevel::DEBUG} {
+  // Dimension must be positive
+  if (dim <= 0) {
+    throw std::invalid_argument("Dimension must be greater than 0.");
+  }
   // Check that all min values are less than the max values
   if ((min_vals.array() >= max_vals.array()).any()) {
     throw std::invalid_argument(

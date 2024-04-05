@@ -8,7 +8,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Eigen3 REQUIRED)
 
-# MATPLOTLIB ###################################################################
+# CATCH2 ######################################################################
+
+include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG v3.4.0 # or a later release
+)
+
+FetchContent_MakeAvailable(Catch2)
+
+#MATPLOTLIB ###################################################################
 
 # Find Python interpreter for Matplotlib
 find_package(Python3 COMPONENTS Interpreter Development)
@@ -37,4 +49,16 @@ target_link_libraries(planning_lib Eigen3::Eigen)
 # EXAMPLES ####################################################################
 
 add_executable(example src/example_rrt.cpp)
-target_link_libraries(example planning_lib plotter_lib Python3::Python Eigen3::Eigen)
+target_link_libraries(example
+  planning_lib
+  plotter_lib
+  Python3::Python
+  Eigen3::Eigen)
+
+# TESTING ######################################################################
+
+add_executable(tests tests/planning.cpp)
+target_link_libraries(tests PRIVATE planning_lib Catch2::Catch2WithMain)
+
+include(Catch)
+catch_discover_tests(tests)

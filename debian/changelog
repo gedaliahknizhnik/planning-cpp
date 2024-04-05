@@ -1,3 +1,9 @@
+planning (0.2.0) jammy; urgency=medium
+
+  * Incorporates testing via Catch2 
+
+ -- Gedaliah Knizhnik <gedaliah.knizhnik@gmail.com>  Fri, 05 Apr 2024 10:25:49 -0400
+
 planning (0.1.0) jammy; urgency=medium
 
   * Set up initial project structure.

@@ -5,12 +5,20 @@
 #include <chrono>
 #include <functional>
 #include <optional>
+#include <stdexcept>
 #include <thread>
 
 namespace planning {
 
 RRT::RRT(const int dim, const int max_iters, CollisionFunc collision_func)
-    : dim_(dim), max_iters_{max_iters}, collision_func_{collision_func} {};
+    : dim_(dim), max_iters_{max_iters}, collision_func_{collision_func} {
+  if (dim <= 0) {
+    throw std::invalid_argument("Dimension must be greater than 0.");
+  }
+  if (max_iters_ <= 0) {
+    throw std::invalid_argument("Max iters must be greater than 0.");
+  }
+};
 RRT::~RRT() {
   if (solver_thread_.joinable()) {
     solver_thread_.join();

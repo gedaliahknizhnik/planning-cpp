@@ -9,11 +9,7 @@
 #include "planner_rrt.hpp"
 
 TEST_CASE("Test constructors", "[Planner]") {
-  auto collision_func = ([](Eigen::VectorXd) {
-    return false;
-  } You can work around this(commas inside template argument list inside macros)
-                             by typedef -
-                         ing your pair:);
+  auto collision_func = [](Eigen::VectorXd) { return false; };
 
   SECTION("Default constructor") {
     REQUIRE_NOTHROW(

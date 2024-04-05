@@ -16,12 +16,16 @@ RRT::RRT(const int dim, const Eigen::VectorXd min_vals,
     : dim_{dim},
       min_vals_{min_vals},
       max_vals_{max_vals},
-      collision_func_{collision_func} {
+      collision_func_{collision_func},
+      logger_{logging::LogLevel::DEBUG} {
   // Check that all min values are less than the max values
   if ((min_vals.array() >= max_vals.array()).any()) {
     throw std::invalid_argument(
         "All min values must be less than their corresponding max value.");
   }
+
+  logger_.Log(logging::LogLevel::DEBUG,
+              "Created RRT Planner of dimension " + std::to_string(dim));
 }
 RRT::RRT(const int dim, const Eigen::VectorXd max_vals,
          CollisionFunc collision_func)
@@ -32,8 +36,11 @@ RRT::RRT(const int dim, const double max_val, CollisionFunc collision_func)
 
 RRT::~RRT() {
   if (solver_thread_.joinable()) {
+    logger_.Log(logging::LogLevel::DEBUG,
+                "Waiting for solver thread to join...");
     solver_thread_.join();
   }
+  logger_.Log(logging::LogLevel::DEBUG, "RRT Planner destroyed.");
 }
 
 void RRT::SetMaxIters(const int max_iters) {

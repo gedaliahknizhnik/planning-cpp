@@ -7,6 +7,8 @@
 #include <optional>
 #include <thread>
 
+#include "logger.hpp"
+
 namespace planning {
 
 using CollisionFunc = std::function<bool(Eigen::VectorXd)>;
@@ -97,6 +99,8 @@ class RRT {
   Eigen::VectorXd start_{};
   Eigen::VectorXd goal_{};
   Plan plan_{};
+
+  logging::Logger logger_{};
 };
 
 }  // namespace planning

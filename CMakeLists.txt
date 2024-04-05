@@ -26,15 +26,27 @@ else()
   message("-- Found matplotlibcpp.h header locally.")
 endif()
 
+# LOGGER #######################################################################
+
+include(FetchContent)
+FetchContent_Declare(
+  logger_lib_gedaliah
+  GIT_REPOSITORY https://github.com/gedaliahknizhnik/logging-cpp.git 
+  GIT_TAG    3b44a2e
+ )
+
+FetchContent_MakeAvailable(logger_lib_gedaliah)
+
 # PLANNING ####################################################################
 
 add_library(plotter_lib src/planner_plotter.cpp include/planner_plotter.hpp)
 target_link_libraries(plotter_lib Python3::Python)
 
 add_library(planning_lib src/planner_rrt.cpp include/planner_rrt.hpp)
-target_link_libraries(planning_lib Eigen3::Eigen)
+target_link_libraries(planning_lib PRIVATE Eigen3::Eigen logger_lib)
+target_include_directories(planning_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # EXAMPLES ####################################################################
 
-add_executable(example src/example_rrt.cpp)
-target_link_libraries(example planning_lib plotter_lib Python3::Python Eigen3::Eigen)
+add_executable(example_plan src/example_rrt.cpp)
+target_link_libraries(example_plan planning_lib plotter_lib Python3::Python Eigen3::Eigen)

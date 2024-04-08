@@ -49,7 +49,7 @@ RRT::~RRT() {
 
 void RRT::SetMaxIters(const int max_iters) {
   if (max_iters <= 0) {
-    throw std::runtime_error("Max iters must be greater than 0.");
+    throw std::invalid_argument("Max iters must be greater than 0.");
   }
   max_iters_ = max_iters;
 }
@@ -57,7 +57,7 @@ void RRT::SetMaxIters(const int max_iters) {
 const PlanningStatus RRT::SetProblem(Eigen::VectorXd start,
                                      Eigen::VectorXd goal) {
   if ((start.size() != dim_) || (goal.size() != dim_)) {
-    throw std::runtime_error(
+    throw std::invalid_argument(
         "Start and goal dimensions must match the planner dimension.");
   }
 

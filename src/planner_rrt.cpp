@@ -1,13 +1,17 @@
 #include "planner_rrt.hpp"
 
+#include <Eigen/src/Core/Matrix.h>
+
 #include <Eigen/Geometry>
 #include <atomic>
 #include <chrono>
 #include <functional>
+#include <iostream>
 #include <optional>
+#include <queue>
+#include <random>
 #include <stdexcept>
 #include <thread>
-
 namespace planning {
 
 // Primary constructor - all other constructors should delegate to this one
@@ -30,7 +34,14 @@ RRT::RRT(const int dim, const Eigen::VectorXd min_vals,
 
   logger_.Log(logging::LogLevel::DEBUG,
               "Created RRT Planner of dimension " + std::to_string(dim));
+
+  logger_.Log(logging::LogLevel::WARNING,
+              "Initializing random number generator using constant seed. "
+              "Disable before use.");
+  srand(0);
+  // srand(rd_());
 }
+
 RRT::RRT(const int dim, const Eigen::VectorXd max_vals,
          CollisionFunc collision_func)
     : RRT(dim, -max_vals, max_vals, collision_func) {}
@@ -90,6 +101,13 @@ const std::optional<Plan> RRT::GetPlan() const {
   }
 }
 
+Eigen::VectorXd RRT::RandomSample() const {
+  const Eigen::VectorXd random{Eigen::VectorXd::Random(dim_)};
+  const Eigen::VectorXd sample{min_vals_ +
+                               (max_vals_ - min_vals_).cwiseProduct(random)};
+  return sample;
+}
+
 void RRT::Solve() {
   // Spin up a thread to solve the problem asynchronously
   solver_thread_ = std::thread{&RRT::SolveInThread, this};
@@ -98,8 +116,49 @@ void RRT::Solve() {
 void RRT::SolveInThread() {
   is_solved_ = false;
 
-  for (size_t iter{0UL}; iter < max_iters_; ++iter) {
+  Eigen::MatrixXd tree;
+  tree.resize(max_iters_, dim_);
+  Eigen::VectorXd parent;
+  parent.resize(max_iters_);
+
+  // Add start to the queue
+  size_t iter{0UL};
+  tree.row(iter) = start_;
+  parent(iter) = -1;
+  ++iter;
+
+  // Process RRT Iterations
+  while (iter < max_iters_) {
+    // Generate a random sample
+    // TODO: Sometimes select the goal
+    const Eigen::VectorXd sample{RandomSample()};
+    if (collision_func_(sample)) {
+      continue;
+    }
+
+    // Find the nearest point already in the tree
+    const Eigen::MatrixXd diff_matrix =
+        tree(Eigen::seq(0, iter), Eigen::all).rowwise() - sample.transpose();
+    const Eigen::VectorXd diff_norms =
+        diff_matrix.rowwise().norm();  // get location of minimum
+    Eigen::Index min_row, min_col;
+    const double min = diff_norms.minCoeff(&min_row, &min_col);
+    const Eigen::VectorXd nearest = tree.row(min_row);
+
+    // Move towards the sample
+    const double distance = (sample - nearest).norm();
+    const Eigen::VectorXd direction = (sample - nearest).normalized();
+    const Eigen::VectorXd new_point =
+        nearest + direction * std::min(distance, step_size_);
+
+    // Add the new point to the tree
+    tree.row(iter) = new_point;
+    parent(iter) = min_row;
+
+    ++iter;
   }
+
+  std::cout << tree << std::endl;
 
   // TODO: SOLVE THE PROBLEM IN A THREAD
   // std::this_thread::sleep_for(std::chrono::seconds(10));

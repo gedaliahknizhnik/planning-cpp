@@ -5,6 +5,7 @@
 #include <atomic>
 #include <functional>
 #include <optional>
+#include <random>
 #include <thread>
 
 #include "logger.hpp"
@@ -85,9 +86,11 @@ class RRT {
 
  private:
   void SolveInThread();
+  Eigen::VectorXd RandomSample() const;
 
   const int dim_{};
   int max_iters_{MAX_ITERS_DEFAULT};
+  const double step_size_{0.5};  // TODO: Make this configurable
 
   CollisionFunc collision_func_{};
   std::thread solver_thread_{};
@@ -99,6 +102,8 @@ class RRT {
   Eigen::VectorXd start_{};
   Eigen::VectorXd goal_{};
   Plan plan_{};
+
+  std::random_device rd_{};
 
   logging::Logger logger_{};
 };

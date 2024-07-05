@@ -1,5 +1,7 @@
 #include "planner_plotter.hpp"
 
+#include <Eigen/src/Core/Matrix.h>
+
 #include "matplotlibcpp.h"
 
 namespace plt = matplotlibcpp;
@@ -43,6 +45,28 @@ void Plotter::PlotPath(const std::vector<std::vector<double>>& path) {
     y.push_back(point[1]);
   }
   plt::plot(x, y, "b");
+}
+
+void Plotter::PlotLine(const Eigen::VectorXd& pti, const Eigen::VectorXd& ptj) {
+  if (pti.size() != 2 || ptj.size() != 2) {
+    throw std::runtime_error("Plotter is only configured for 2D systems.");
+  }
+  std::vector<double> x, y;
+  x.push_back(pti[0]);
+  x.push_back(ptj[0]);
+  y.push_back(pti[1]);
+  y.push_back(ptj[1]);
+  plt::plot(x, y, "k");
+}
+
+void Plotter::PlotTree(const Tree& tree) {
+  for (size_t ii{0UL}; ii < tree.GetSize(); ++ii) {
+    Eigen::VectorXd pti, ptj;
+    if (tree.GetEdge(ii, &pti, &ptj)) {
+      continue;
+    }
+    PlotLine(pti, ptj);
+  }
 }
 
 void Plotter::Save() {

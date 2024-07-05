@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "logger.hpp"
+#include "planner_defs.hpp"
 
 namespace planning {
 
@@ -16,7 +17,7 @@ using CollisionFunc = std::function<bool(Eigen::VectorXd)>;
 using Plan = std::vector<Eigen::VectorXd>;
 
 constexpr size_t MAX_ITERS_DEFAULT =
-    10UL;  // TODO: Change to higher once done testing
+    100UL;  // TODO: Change to higher once done testing
 
 enum class PlanningStatus : uint {
   SUCCESS = 0U,
@@ -81,6 +82,9 @@ class RRT {
   const PlanningStatus SetProblem(std::vector<double> start,
                                   std::vector<double> goal);
   const std::optional<Plan> GetPlan() const;
+  const std::optional<Tree> GetTree() const;
+
+  const bool IsSolved() const { return is_solved_; }
 
   void Solve();
 
@@ -102,6 +106,7 @@ class RRT {
   Eigen::VectorXd start_{};
   Eigen::VectorXd goal_{};
   Plan plan_{};
+  Tree tree_{};
 
   std::random_device rd_{};
 

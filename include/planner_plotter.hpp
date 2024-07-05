@@ -1,8 +1,11 @@
 #ifndef PLANNER_PLOTTER_HPP
 #define PLANNER_PLOTTER_HPP
 
+#include <Eigen/Geometry>  // Eigen is a header-only library
 #include <string>
 #include <vector>
+
+#include "planner_defs.hpp"
 
 namespace planning {
 
@@ -14,6 +17,8 @@ class Plotter {
   void PlotStart(const std::vector<double>& start);
   void PlotGoal(const std::vector<double>& goal);
   void PlotPath(const std::vector<std::vector<double>>& path);
+  void PlotLine(const Eigen::VectorXd& pti, const Eigen::VectorXd& ptj);
+  void PlotTree(const Tree& tree);
   void Save();
 
  private:

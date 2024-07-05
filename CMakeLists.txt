@@ -51,7 +51,7 @@ FetchContent_MakeAvailable(logger_lib_gedaliah)
 # PLANNING ####################################################################
 
 add_library(plotter_lib src/planner_plotter.cpp include/planner_plotter.hpp)
-target_link_libraries(plotter_lib Python3::Python)
+target_link_libraries(plotter_lib Python3::Python Eigen3::Eigen)
 
 add_library(planning_lib src/planner_rrt.cpp include/planner_rrt.hpp)
 target_link_libraries(planning_lib PRIVATE Eigen3::Eigen logger_lib)

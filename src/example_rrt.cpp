@@ -21,4 +21,18 @@ int main() {
   planning::RRT planner{2, 100, [](Eigen::VectorXd) { return false; }};
   planner.SetProblem(start, goal);
   planner.Solve();
+  while (!planner.IsSolved()) {
+    // Wait for the planner to finish
+    std::cout << "Waiting 10 ms for planner to finish...\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  std::optional<planning::Tree> tree = planner.GetTree();
+  if (tree.has_value()) {
+    plt.PlotTree(tree.value());
+    std::cout << "Plotted tree! of size: " << tree.value().GetSize()
+              << std::endl;
+
+  } else {
+    std::cout << "Tree is empty!" << std::endl;
+  }
 }

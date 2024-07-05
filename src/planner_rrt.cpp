@@ -82,6 +82,7 @@ const PlanningStatus RRT::SetProblem(Eigen::VectorXd start,
   goal_ = goal;
 
   plan_.clear();
+  tree_ = Tree{};
 
   // TODO: SOLVE THE PROBLEM
   return PlanningStatus::SUCCESS;
@@ -96,6 +97,14 @@ const PlanningStatus RRT::SetProblem(std::vector<double> start,
 const std::optional<Plan> RRT::GetPlan() const {
   if (is_solved_) {
     return plan_;
+  } else {
+    return {};
+  }
+}
+
+const std::optional<Tree> RRT::GetTree() const {
+  if (is_solved_) {
+    return tree_;
   } else {
     return {};
   }
@@ -158,6 +167,7 @@ void RRT::SolveInThread() {
     ++iter;
   }
 
+  tree_ = Tree{tree, parent};
   std::cout << tree << std::endl;
 
   // TODO: SOLVE THE PROBLEM IN A THREAD
